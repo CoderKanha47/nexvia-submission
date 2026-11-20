@@ -1,0 +1,5 @@
+# Ignore Node.js scripts
+client/server.js
+dist/
+node_modules/
+*.log

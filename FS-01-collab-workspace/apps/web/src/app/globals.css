@@ -1,0 +1,233 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Color tokens (HSL channels). Light is default; `.dark` overrides.
+ * All Tailwind color utilities map to these via tailwind.config.ts.
+ */
+:root {
+  --background: 0 0% 100%;
+  --foreground: 224 71% 4%;
+  --surface: 0 0% 99%;
+  --surface-2: 220 20% 96%;
+  --border: 220 13% 90%;
+  --muted: 220 14% 95%;
+  --muted-foreground: 222 15% 44%;
+  --accent: 243 75% 59%;
+  --accent-foreground: 0 0% 100%;
+  --selection: 243 75% 93%;
+  --danger: 0 78% 52%;
+  --success: 152 60% 36%;
+  --warning: 35 90% 44%;
+  --editor-bg: 0 0% 100%;
+  --comment-highlight: 43 90% 88%;
+  --scroll-thumb: 220 13% 85%;
+}
+
+.dark {
+  --background: 225 30% 6%;
+  --foreground: 216 26% 97%;
+  --surface: 224 28% 9%;
+  --surface-2: 223 24% 13%;
+  --border: 223 20% 17%;
+  --muted: 223 22% 14%;
+  --muted-foreground: 218 14% 66%;
+  --accent: 243 78% 68%;
+  --accent-foreground: 225 30% 6%;
+  --selection: 243 45% 28%;
+  --danger: 0 72% 58%;
+  --success: 152 46% 48%;
+  --warning: 38 90% 55%;
+  --editor-bg: 225 30% 6%;
+  --comment-highlight: 40 45% 26%;
+  --scroll-thumb: 223 20% 24%;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: hsl(var(--selection));
+  }
+
+  ::highlight(nexvia-comment) {
+    background-color: hsl(var(--comment-highlight));
+  }
+
+  *:focus-visible {
+    outline: none;
+  }
+
+  /* Thin, themed scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--scroll-thumb)) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--scroll-thumb));
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@layer components {
+  /* ---------- Slash command menu portal ---------- */
+  .slash-menu-portal {
+    position: fixed;
+    z-index: 50;
+  }
+
+  /* ---------- TipTap / ProseMirror editor ---------- */
+  .editor-shell {
+    @apply min-h-[60vh] rounded-lg px-1 py-2 text-[15px] leading-7 text-foreground;
+  }
+
+  .editor-shell .ProseMirror {
+    @apply min-h-[50vh] outline-none;
+  }
+
+  .editor-shell .ProseMirror > * + * {
+    margin-top: 0.6em;
+  }
+
+  .editor-shell h1 {
+    @apply mt-6 text-3xl font-bold tracking-tight;
+  }
+  .editor-shell h2 {
+    @apply mt-5 text-2xl font-bold tracking-tight;
+  }
+  .editor-shell h3 {
+    @apply mt-4 text-xl font-semibold;
+  }
+  .editor-shell p {
+    @apply my-1;
+  }
+  .editor-shell ul {
+    @apply my-1 list-disc pl-6;
+  }
+  .editor-shell ol {
+    @apply my-1 list-decimal pl-6;
+  }
+  .editor-shell blockquote {
+    @apply my-2 border-l-4 border-accent/50 pl-4 text-muted-foreground;
+  }
+  .editor-shell code {
+    @apply rounded bg-muted px-1.5 py-0.5 font-mono text-[13px] text-foreground;
+  }
+  .editor-shell pre {
+    @apply my-3 overflow-x-auto rounded-lg bg-surface-2 p-4 font-mono text-[13px] leading-6 text-foreground;
+  }
+  .editor-shell pre code {
+    @apply bg-transparent p-0;
+  }
+  .editor-shell a {
+    @apply text-accent underline underline-offset-2;
+  }
+  .editor-shell mark,
+  .editor-shell .highlight {
+    background-color: hsl(var(--comment-highlight));
+    border-radius: 2px;
+    padding: 0 2px;
+  }
+  .editor-shell hr {
+    @apply my-6 border-border;
+  }
+  .editor-shell img {
+    @apply my-3 max-w-full rounded-lg;
+  }
+  .editor-shell table {
+    @apply my-3 w-full border-collapse overflow-hidden rounded-lg text-sm;
+  }
+  .editor-shell th,
+  .editor-shell td {
+    @apply border border-border px-3 py-2 text-left;
+  }
+  .editor-shell th {
+    @apply bg-muted font-semibold;
+  }
+  .editor-shell ul[data-type='taskList'] {
+    @apply list-none pl-1;
+  }
+  .editor-shell ul[data-type='taskList'] li {
+    @apply flex items-start gap-2;
+  }
+  .editor-shell ul[data-type='taskList'] li > label {
+    @apply mt-1;
+  }
+  .editor-shell ul[data-type='taskList'] li[data-checked='true'] > div {
+    @apply text-muted-foreground line-through;
+  }
+
+  /* Placeholder */
+  .editor-shell .ProseMirror p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    @apply pointer-events-none float-left h-0 text-muted-foreground/70;
+  }
+
+  /* Comment anchor highlight (set by the comment decoration plugin) */
+  .editor-shell .comment-anchor {
+    background-color: hsl(var(--comment-highlight));
+    border-radius: 2px;
+    cursor: pointer;
+    box-shadow: inset 0 -2px 0 0 hsl(var(--warning) / 0.65);
+  }
+  .editor-shell .comment-anchor[data-active='true'] {
+    background-color: hsl(var(--warning) / 0.45);
+  }
+
+  /* ---------- Remote cursors (CollaborationCursor) ---------- */
+  .collaboration-carets__caret {
+    position: relative;
+    margin-left: -1px;
+    margin-right: -1px;
+    border-left: 1px solid;
+    border-right: none;
+    pointer-events: none;
+    word-break: normal;
+  }
+
+  .collaboration-carets__label {
+    position: absolute;
+    top: -1.35em;
+    left: -1px;
+    padding: 1px 6px 2px;
+    border-radius: 4px 4px 4px 0;
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 1.5;
+    white-space: nowrap;
+    color: #fff;
+    user-select: none;
+    opacity: 0.92;
+  }
+
+  .collaboration-carets__selection {
+    mix-blend-mode: multiply;
+  }
+  .dark .collaboration-carets__selection {
+    mix-blend-mode: screen;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

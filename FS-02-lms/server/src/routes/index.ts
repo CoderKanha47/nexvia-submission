@@ -1,0 +1,35 @@
+import { Router } from 'express';
+import { authRouter } from './auth.routes';
+import { courseRouter } from './course.routes';
+import { healthRouter } from './health.routes';
+import { videoRouter } from './video.routes';
+import { enrollmentRouter } from './enrollment.routes';
+import { quizRouter, courseQuizRouter } from './quiz.routes';
+import { paymentRouter } from './payment.routes';
+import { paynextRouter } from './paynext.routes';
+import { adminRouter } from './admin.routes';
+import { liveClassRouter } from './live-class.routes';
+import { certificateRouter } from './certificate.routes';
+import { userRouter } from './user.routes';
+import { playbackRouter } from './playback.routes';
+import { mediaRouter } from './media.routes';
+import { statsRouter } from './stats.routes';
+
+export const routes = Router();
+
+routes.use('/health', healthRouter);
+routes.use('/auth', authRouter);
+routes.use('/courses', courseRouter);
+routes.use('/videos', videoRouter);
+routes.use('/enrollments', enrollmentRouter);
+routes.use('/quizzes', quizRouter);
+routes.use('/courses', courseQuizRouter);
+routes.use('/payments', paymentRouter);
+routes.use('/paynext', paynextRouter);
+routes.use('/admin', adminRouter);
+routes.use('/live-classes', liveClassRouter);
+routes.use('/certificates', certificateRouter);
+routes.use('/users', userRouter);
+routes.use('/media', playbackRouter);
+routes.use('/media', mediaRouter);
+routes.use('/stats', statsRouter);

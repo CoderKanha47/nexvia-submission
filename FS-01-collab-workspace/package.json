@@ -1,0 +1,40 @@
+{
+  "name": "nexvia-workspace",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "tests"
+  ],
+  "scripts": {
+    "setup": "node scripts/setup-env.mjs",
+    "dev": "npm run build -w packages/shared && npm run build -w packages/db && concurrently -n web,sync -c cyan,magenta \"npm run dev -w apps/web\" \"npm run dev -w apps/sync\"",
+    "build": "npm run build -w packages/shared && npm run build -w packages/db && npm run build -w apps/sync && npm run build -w apps/web",
+    "lint": "npm run lint --workspaces --if-present",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,mjs,json,md,css}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mjs,json,md,css}\"",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test -w tests",
+    "test:integration": "npm run test:integration -w tests",
+    "test:load": "node scripts/load-test.mjs",
+    "test:convergence": "node scripts/smoke-phase9.mjs",
+    "test:smoke": "node scripts/smoke-phase7.mjs && node scripts/smoke-phase8.mjs",
+    "db:migrate": "npm run migrate -w packages/db",
+    "db:deploy": "npm run migrate:deploy -w packages/db",
+    "db:seed": "npm run seed -w packages/db",
+    "db:reset": "npm run db:reset -w packages/db"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.6.3"
+  },
+  "overrides": {
+    "@prisma/client": "5.22.0",
+    "prisma": "5.22.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

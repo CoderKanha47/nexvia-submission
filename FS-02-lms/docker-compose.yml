@@ -1,0 +1,27 @@
+services:
+  mongo:
+    image: mongo:7
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+    restart: unless-stopped
+
+  # Dev-only LiveKit. `--dev` uses API key `devkey`, secret `secret`.
+  livekit:
+    image: livekit/livekit-server:latest
+    command: --dev --bind 0.0.0.0
+    ports:
+      - '7880:7880' # WebSocket / WebRTC signaling
+      - '7881:7881' # WebRTC RTC port range (dev single port)
+      - '50051:50051' # internal
+    restart: unless-stopped
+
+volumes:
+  mongo-data:

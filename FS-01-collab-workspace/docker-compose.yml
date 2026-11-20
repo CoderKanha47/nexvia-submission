@@ -1,0 +1,103 @@
+name: nexvia
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: workspace
+      POSTGRES_PASSWORD: workspace
+      POSTGRES_DB: workspace
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U workspace -d workspace']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  sync1:
+    build:
+      context: .
+      dockerfile: apps/sync/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://workspace:workspace@postgres:5432/workspace?schema=public
+      REDIS_URL: redis://redis:6379
+      WS_TOKEN_SECRET: ${WS_TOKEN_SECRET:-dev-secret-change-me}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-dev-secret-change-me}
+      SYNC_PORT: '4001'
+      INSTANCE_ID: sync1
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  sync2:
+    build:
+      context: .
+      dockerfile: apps/sync/Dockerfile
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://workspace:workspace@postgres:5432/workspace?schema=public
+      REDIS_URL: redis://redis:6379
+      WS_TOKEN_SECRET: ${WS_TOKEN_SECRET:-dev-secret-change-me}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-dev-secret-change-me}
+      SYNC_PORT: '4001'
+      INSTANCE_ID: sync2
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - '4000:80'
+    volumes:
+      - ./infra/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - sync1
+      - sync2
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      DATABASE_URL: postgresql://workspace:workspace@postgres:5432/workspace?schema=public
+      REDIS_URL: redis://redis:6379
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-dev-secret-change-me}
+      WS_TOKEN_SECRET: ${WS_TOKEN_SECRET:-dev-secret-change-me}
+      NEXT_PUBLIC_SYNC_URL: ws://localhost:4000
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      nginx:
+        condition: service_started
+
+volumes:
+  pgdata:
