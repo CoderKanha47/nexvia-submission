@@ -1,17 +1,17 @@
-# Nexvia Internship Submission: FS-02 and FS-03
+# Nexvia Internship Submission: FS-01 and FS-02
 
 Two full-stack projects from the Nexvia Full-Stack Development track, submitted in one repository.
 
 | Project | What it is | Folder |
 |---|---|---|
-| **FS-02** | Real-time collaborative workspace (Notion-style) with live co-editing, presence, comments, version history and roles | [`FS-02-collab-workspace/`](./FS-02-collab-workspace) |
-| **FS-03** | Learning management system with live classes, quizzes, certificates and instructor earnings | [`FS-03-lms/`](./FS-03-lms) |
+| **FS-01** | Real-time collaborative workspace (Notion-style) with live co-editing, presence, comments, version history and roles | [`FS-01-collab-workspace/`](./FS-01-collab-workspace) |
+| **FS-02** | Learning management system with live classes, quizzes, certificates and instructor earnings | [`FS-02-lms/`](./FS-02-lms) |
 
 Each folder is self-contained, with its own README (setup, run steps, features), `docs/`, tests and `.env.example`. Start with the project README of the one you want to run.
 
 ## Tech stack at a glance
 
-| | FS-02 Collaborative Workspace | FS-03 LMS with Live Classes |
+| | FS-01 Collaborative Workspace | FS-02 LMS with Live Classes |
 |---|---|---|
 | **Frontend** | Next.js 14 (App Router), TipTap editor, Yjs | React 19, TypeScript, Vite, Redux Toolkit + RTK Query, Tailwind CSS, Chart.js, hls.js, livekit-client |
 | **Backend** | Next.js REST API and auth (NextAuth), custom WebSocket sync server (Yjs protocol) | Node.js, Express 5, TypeScript |
@@ -22,10 +22,10 @@ Each folder is self-contained, with its own README (setup, run steps, features),
 
 ### Notes on stack choices
 
-- FS-02 uses Next.js as a full-stack framework, so the UI, REST API and authentication live in one app, with a separate sync server for the real-time layer.
-- FS-03 uses MongoDB with Mongoose for its data layer.
+- FS-01 uses Next.js as a full-stack framework, so the UI, REST API and authentication live in one app, with a separate sync server for the real-time layer.
+- FS-02 uses MongoDB with Mongoose for its data layer.
 
-## FS-02: Collaborative Workspace
+## FS-01: Collaborative Workspace
 
 - **Live collaboration:** Yjs CRDTs over a custom WebSocket sync protocol, scaled across instances with Redis pub/sub
 - **Rich text editor:** TipTap with slash menu, bubble toolbar and command palette
@@ -36,9 +36,9 @@ Each folder is self-contained, with its own README (setup, run steps, features),
 - **Offline editing:** local persistence with automatic merge on reconnect
 - **Workspaces:** nested pages, favorites, trash and restore, member management, invite links
 
-Details and run steps: [`FS-02-collab-workspace/README.md`](./FS-02-collab-workspace/README.md)
+Details and run steps: [`FS-01-collab-workspace/README.md`](./FS-01-collab-workspace/README.md)
 
-## FS-03: Learning Management System
+## FS-02: Learning Management System
 
 - **Roles:** student, instructor and admin, with JWT auth and role-based access control
 - **Courses:** course, sections and lessons, with a draft, pending and published flow
@@ -49,14 +49,14 @@ Details and run steps: [`FS-02-collab-workspace/README.md`](./FS-02-collab-works
 - **Payments:** Stripe Checkout in test mode, with instructor earnings dashboard (Chart.js)
 - **Admin:** recent platform activity and purchase records
 
-Details and run steps: [`FS-03-lms/README.md`](./FS-03-lms/README.md)
+Details and run steps: [`FS-02-lms/README.md`](./FS-02-lms/README.md)
 
 ## Repository structure
 
 ```
 .
 ├── README.md                      This file
-├── FS-02-collab-workspace/
+├── FS-01-collab-workspace/
 │   ├── apps/
 │   │   ├── web/                   Next.js app: UI, REST API, auth
 │   │   └── sync/                  WebSocket sync server
@@ -67,7 +67,7 @@ Details and run steps: [`FS-03-lms/README.md`](./FS-03-lms/README.md)
 │   ├── scripts/                   Smoke tests and load test
 │   ├── infra/                     nginx config
 │   └── docs/                      Architecture, API, test results, reflection
-└── FS-03-lms/
+└── FS-02-lms/
     ├── client/                    React frontend
     ├── server/                    Express backend and BullMQ workers
     ├── scripts/                   Seed script
@@ -79,10 +79,10 @@ Details and run steps: [`FS-03-lms/README.md`](./FS-03-lms/README.md)
 
 Each project has full instructions in its own README. The short version:
 
-### FS-02
+### FS-01
 
 ```bash
-cd FS-02-collab-workspace
+cd FS-01-collab-workspace
 npm install
 cp .env.example .env
 npm run db:deploy        # apply Prisma migrations
@@ -92,10 +92,10 @@ npm run dev              # web :3000 and sync :1234
 
 Or run the full multi-instance stack with `docker compose up -d --build`.
 
-### FS-03
+### FS-02
 
 ```bash
-cd FS-03-lms
+cd FS-02-lms
 npm install
 cd server && npm install && cd ../client && npm install && cd ..
 cp .env.example .env
@@ -113,28 +113,28 @@ Demo accounts created by each seed script are listed in the project READMEs.
 ## Verification
 
 ```bash
-# FS-02
-cd FS-02-collab-workspace
+# FS-01
+cd FS-01-collab-workspace
 npm run typecheck && npm run lint
 npm run test -w tests              # integration tests (needs sync server, database and Redis)
 node scripts/load-test.mjs         # concurrent clients converge
 
-# FS-03
-cd FS-03-lms
+# FS-02
+cd FS-02-lms
 cd server && npm run test && npm run typecheck
 cd ../client && npm run build
 ```
 
-Recorded results are in each project's docs: `FS-02-collab-workspace/docs/test-results.md` and `FS-03-lms/docs/TEST_RESULTS.md`.
+Recorded results are in each project's docs: `FS-01-collab-workspace/docs/test-results.md` and `FS-02-lms/docs/TEST_RESULTS.md`.
 
 ## Documentation
 
-| | FS-02 | FS-03 |
+| | FS-01 | FS-02 |
 |---|---|---|
-| Architecture | `FS-02-collab-workspace/docs/architecture.md` | `FS-03-lms/docs/ARCHITECTURE.md` |
-| API | `FS-02-collab-workspace/docs/` | `FS-03-lms/docs/API.md` |
-| Test results | `FS-02-collab-workspace/docs/test-results.md` | `FS-03-lms/docs/TEST_RESULTS.md` |
-| Reflection | `FS-02-collab-workspace/docs/` | `FS-03-lms/docs/REFLECTION.md` |
+| Architecture | `FS-01-collab-workspace/docs/architecture.md` | `FS-02-lms/docs/ARCHITECTURE.md` |
+| API | `FS-01-collab-workspace/docs/` | `FS-02-lms/docs/API.md` |
+| Test results | `FS-01-collab-workspace/docs/test-results.md` | `FS-02-lms/docs/TEST_RESULTS.md` |
+| Reflection | `FS-01-collab-workspace/docs/` | `FS-02-lms/docs/REFLECTION.md` |
 | Other | CRDT notes | `STATUS.md`, `DECISIONS.md`, `PRESENTATION.md` |
 
 ## Submission deliverables
@@ -151,9 +151,9 @@ Recorded results are in each project's docs: `FS-02-collab-workspace/docs/test-r
 
 ## Known limitations
 
-- **FS-03 video playback:** upload, the BullMQ job and FFmpeg HLS transcoding are implemented, but lesson video playback was unreliable at submission time. The recorded demo covers the guest, student and admin flows instead.
-- **FS-03 payments** run in Stripe test mode only. No real payments are processed.
-- **Optional cloud services** (S3, CloudFront, Stripe keys) need your own credentials. Without them, FS-03 falls back to local storage and a demo checkout.
+- **FS-02 video playback:** upload, the BullMQ job and FFmpeg HLS transcoding are implemented, but lesson video playback was unreliable at submission time. The recorded demo covers the guest, student and admin flows instead.
+- **FS-02 payments** run in Stripe test mode only. No real payments are processed.
+- **Optional cloud services** (S3, CloudFront, Stripe keys) need your own credentials. Without them, FS-02 falls back to local storage and a demo checkout.
 - Secrets are never committed. Copy each `.env.example` to `.env` and fill in your own values.
 
 ## Author
